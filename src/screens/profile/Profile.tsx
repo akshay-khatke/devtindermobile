@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/store";
 import { logout } from "../../redux/authSlice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Keychain from "react-native-keychain";
 import { colors } from "../../utils/colors";
 
 const Profile = () => {
@@ -23,7 +23,7 @@ const Profile = () => {
                     style: "destructive",
                     onPress: async () => {
                         try {
-                            await AsyncStorage.removeItem("token");
+                            await Keychain.resetGenericPassword();
                             dispatch(logout());
                         } catch (err) {
                             console.error("Failed to clear session", err);

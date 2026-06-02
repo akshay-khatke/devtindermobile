@@ -1,16 +1,17 @@
 // src/api/auth.ts
 import API from "./client";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Keychain from "react-native-keychain";
 
 export const login = async (data: {
     emailId: string;
     password: string;
 }) => {
-    console.log(data.emailId, data.password, 'dajcnajdn')
     const res = await API.post("/auth/login", data);
 
-    // Save token once
-    // await AsyncStorage.setItem("token", res.data.token);
+    // Save token once in Keychain
+    if (res.data && res.data.token) {
+        await Keychain.setGenericPassword("token", res.data.token);
+    }
 
     return res.data;
 };
@@ -27,13 +28,15 @@ export const signup = async (data: {
 }) => {
     const res = await API.post("/auth/signUp", data);
 
-    await AsyncStorage.setItem("token", res.data.token);
+    if (res.data && res.data.token) {
+        await Keychain.setGenericPassword("token", res.data.token);
+    }
 
     return res.data;
 };
 
 export const logout = async () => {
-    await AsyncStorage.removeItem("token");
+    await Keychain.resetGenericPassword();
 };
 
 export const changePassword = async (data: {

@@ -6,7 +6,7 @@ import AuthStack from "../stack/AuthStack";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
 import { setUser, setToken, logout } from "../redux/authSlice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Keychain from "react-native-keychain";
 import { viewProfile } from "../api/userApi";
 
 const Stack = createStackNavigator();
@@ -19,8 +19,9 @@ const Routes = () => {
     useEffect(() => {
         const bootstrapAsync = async () => {
             try {
-                const token = await AsyncStorage.getItem("token");
-                if (token) {
+                const credentials = await Keychain.getGenericPassword();
+                if (credentials) {
+                    const token = credentials.password;
                     dispatch(setToken(token));
                     // Fetch user profile from backend using the token
                     const profileData = await viewProfile();

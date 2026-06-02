@@ -1,6 +1,6 @@
 // src/api/client.ts
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Keychain from "react-native-keychain";
 import { BASE_URL } from "../constants/baseUrl";
 
 const API = axios.create({
@@ -11,10 +11,14 @@ const API = axios.create({
 // 🔥 REQUEST INTERCEPTOR (Auto attach token)
 API.interceptors.request.use(
     async (config) => {
-        const token = await AsyncStorage.getItem("token");
-
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        try {
+            const credentials = await Keychain.getGenericPassword();
+            console.log("credentials ->", credentials)
+            if (credentials) {
+                config.headers.Authorization = `Bearer ${credentials.password}`;
+            }
+        } catch (error) {
+            console.warn("Keychain could not be accessed in interceptor", error);
         }
 
         return config;
@@ -28,8 +32,11 @@ API.interceptors.response.use(
     async (error) => {
         if (error.response?.status === 401) {
             console.log("Unauthorized - redirect to login");
-            // Optional: clear token
-            await AsyncStorage.removeItem("token");
+            try {
+                await Keychain.resetGenericPassword();
+            } catch (err) {
+                console.warn("Keychain could not be reset", err);
+            }
         }
         return Promise.reject(error);
     }
