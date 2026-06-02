@@ -1,9 +1,10 @@
 // src/api/client.ts
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "../constants/baseUrl";
 
 const API = axios.create({
-    baseURL: "https://your-api.com/api",
+    baseURL: BASE_URL,
     timeout: 10000,
 });
 

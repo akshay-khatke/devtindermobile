@@ -12,8 +12,12 @@ import {
 import login_image from "../../assets/images/login_image.png"
 import google_icon from "../../assets/images/google.png"
 import facebook_icon from "../../assets/images/facebook.png"
+import { login, signup } from "../../api/authApi";
+import { useDispatch } from "react-redux";
+import { setUser, setToken } from "../../redux/authSlice";
 import { colors } from "../../utils/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ActivityIndicator } from "react-native";
 type IProps = {
     navigation?: any;
 };
@@ -21,11 +25,13 @@ type IProps = {
 const { height, width } = Dimensions.get("window")
 
 const Login: React.FC<IProps> = ({ navigation }) => {
+    const dispatch = useDispatch();
     const [isSignup, setIsSignup] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const validate = () => {
         const emailRegex = /\S+@\S+\.\S+/;
@@ -48,10 +54,32 @@ const Login: React.FC<IProps> = ({ navigation }) => {
         return true;
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!validate()) return;
+        setLoading(true);
 
-        Alert.alert(isSignup ? "Signup Successful" : "Login Successful");
+        try {
+            if (isSignup) {
+                const res = await signup({ emailId: email, password, firstName, lastName });
+                if (res && res.token) {
+                    dispatch(setToken(res.token));
+                    dispatch(setUser(res.data));
+                    Alert.alert("Success", "Signup Successful");
+                }
+            } else {
+                console.log("in login")
+                const res = await login({ emailId: email, password });
+                if (res && res.token) {
+                    dispatch(setToken(res.token));
+                    dispatch(setUser(res));
+                    Alert.alert("Success", "Login Successful");
+                }
+            }
+        } catch (error: any) {
+            Alert.alert("Error", error.response?.data?.message || "Something went wrong");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -101,10 +129,18 @@ const Login: React.FC<IProps> = ({ navigation }) => {
                 secureTextEntry
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>
-                    {isSignup ? "Sign Up" : "Login"}
-                </Text>
+            <TouchableOpacity
+                style={[styles.button, loading && { opacity: 0.7 }]}
+                onPress={handleSubmit}
+                disabled={loading}
+            >
+                {loading ? (
+                    <ActivityIndicator color="#ffffff" />
+                ) : (
+                    <Text style={styles.buttonText}>
+                        {isSignup ? "Sign Up" : "Login"}
+                    </Text>
+                )}
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => setIsSignup(!isSignup)}>
@@ -152,15 +188,17 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 34,
         fontWeight: "bold",
-        marginBottom: 20,
+        marginBottom: 30,
         textAlign: "center",
         color: colors.accent,
     },
     input: {
         borderWidth: 1,
         borderColor: "#ddd",
-        padding: 12,
-        marginBottom: 12,
+        paddingVertical: 15,
+        paddingHorizontal: 15,
+        paddingLeft: 20,
+        marginBottom: 15,
         borderRadius: 10,
     },
     button: {

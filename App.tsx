@@ -12,17 +12,18 @@ import {
 import Routes from './src/routes/Routes';
 import { NavigationContainer } from '@react-navigation/native';
 
+import { Provider } from 'react-redux';
+import { store } from './src/redux/store';
+
 function App() {
-
-
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-
-        <Routes />
-
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <Provider store={store}>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <Routes />
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </Provider>
   );
 }
 
