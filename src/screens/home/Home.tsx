@@ -1,3 +1,4 @@
+// src/screens/home/Home.tsx
 import React, { useEffect, useState, useRef } from "react";
 import {
     Text,
@@ -14,16 +15,84 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getFeed } from "../../api/userApi";
 import { sendRequestStatus } from "../../api/requestApi";
-import { colors } from "../../utils/colors";
+import Svg, { Path, Circle, Defs, LinearGradient as SvgLinearGradient, Rect, Stop } from "react-native-svg";
+import { useTheme } from "../../utils/colors";
+import NoFeedsIcon from "../../assets/svg/no_feeds.svg";
 
 const { width, height } = Dimensions.get("window");
+const CARD_WIDTH = width * 0.92;
+const CARD_HEIGHT = height * 0.70;
+const BUTTON_CONTAINER_TOP = CARD_HEIGHT - 34;
 const SWIPE_THRESHOLD = 0.25 * width;
 
+const GradientOverlay = () => (
+    <View style={StyleSheet.absoluteFill}>
+        <Svg width="100%" height="100%">
+            <Defs>
+                <SvgLinearGradient id="topGrad" x1="0" y1="0" x2="0" y2="1">
+                    <Stop offset="0%" stopColor="#000000" stopOpacity="0.45" />
+                    <Stop offset="40%" stopColor="#000000" stopOpacity="0.2" />
+                    <Stop offset="100%" stopColor="#000000" stopOpacity="0" />
+                </SvgLinearGradient>
+            </Defs>
+            <Rect width="100%" height="100%" fill="url(#topGrad)" />
+        </Svg>
+    </View>
+);
+
+const VerifiedBadge = () => (
+    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" style={{ marginLeft: 6 }}>
+        <Circle cx={12} cy={12} r={12} fill="#3BCE5B" />
+        <Path
+            d="M7 12.5l3.5 3.5 6.5-7"
+            stroke="#ffffff"
+            strokeWidth={3}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </Svg>
+);
+
+
+
+const NopeIcon = () => (
+    <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+        <Path
+            d="M18 6L6 18M6 6l12 12"
+            stroke="#E55050"
+            strokeWidth={3.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </Svg>
+);
+
+const LikeIcon = () => (
+    <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
+        <Path
+            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+            fill="#A124FF"
+        />
+    </Svg>
+);
+
 const Home = () => {
+    const { colors: themeColors, isDark } = useTheme();
+    const styles = getStyles(themeColors);
     const [feed, setFeed] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentIndex, setCurrentIndex] = useState(0);
-    console.log(feed, 'asdjnajnajndjas')
+
+    const feedRef = useRef(feed);
+    const currentIndexRef = useRef(currentIndex);
+
+    useEffect(() => {
+        feedRef.current = feed;
+    }, [feed]);
+
+    useEffect(() => {
+        currentIndexRef.current = currentIndex;
+    }, [currentIndex]);
 
     const position = useRef(new Animated.ValueXY()).current;
 
@@ -48,12 +117,9 @@ const Home = () => {
         PanResponder.create({
             onStartShouldSetPanResponder: () => true,
             onPanResponderMove: (evt, gestureState) => {
-                console.log(feed, "chekc the jjjj")
                 position.setValue({ x: gestureState.dx, y: gestureState.dy });
             },
             onPanResponderRelease: (evt, gestureState) => {
-
-
                 if (gestureState.dx > SWIPE_THRESHOLD) {
                     forceSwipe("right");
                 } else if (gestureState.dx < -SWIPE_THRESHOLD) {
@@ -68,22 +134,27 @@ const Home = () => {
     const resetPosition = () => {
         Animated.spring(position, {
             toValue: { x: 0, y: 0 },
-            useNativeDriver: false
+            friction: 5,
+            tension: 40,
+            useNativeDriver: true
         }).start();
     };
 
     const forceSwipe = (direction: "right" | "left") => {
-        const x = direction === "right" ? width + 100 : -width - 100;
-        Animated.timing(position, {
+        const x = direction === "right" ? width + 120 : -width - 120;
+        Animated.spring(position, {
             toValue: { x, y: 0 },
-            duration: 250,
-            useNativeDriver: false
+            bounciness: 10,
+            speed: 15,
+            useNativeDriver: true
         }).start(() => onSwipeComplete(direction));
     };
 
     const onSwipeComplete = async (direction: "right" | "left") => {
-        console.log(feed, 'check feed index 1')
-        const user = feed[currentIndex];
+        const currentFeed = feedRef.current;
+        const index = currentIndexRef.current;
+        const user = currentFeed[index];
+        if (!user) return;
 
         const status = direction === "right" ? "interested" : "ignored";
 
@@ -98,27 +169,32 @@ const Home = () => {
         setCurrentIndex((prevIndex) => prevIndex + 1);
     };
 
+
+
     const getCardStyle = () => {
         const rotate = position.x.interpolate({
             inputRange: [-width * 1.5, 0, width * 1.5],
-            outputRange: ["-30deg", "0deg", "30deg"]
+            outputRange: ["-15deg", "0deg", "15deg"]
         });
 
         return {
-            ...position.getLayout(),
-            transform: [{ rotate }]
+            transform: [
+                { translateX: position.x },
+                { translateY: position.y },
+                { rotate }
+            ]
         };
     };
 
     const renderLikeDislikeBadges = () => {
         const likeOpacity = position.x.interpolate({
-            inputRange: [0, 150],
+            inputRange: [0, 100],
             outputRange: [0, 1],
             extrapolate: "clamp"
         });
 
         const nopeOpacity = position.x.interpolate({
-            inputRange: [-150, 0],
+            inputRange: [-100, 0],
             outputRange: [1, 0],
             extrapolate: "clamp"
         });
@@ -139,7 +215,8 @@ const Home = () => {
         if (currentIndex >= feed.length) {
             return (
                 <View style={styles.noMoreCards}>
-                    <Text style={styles.noMoreText}>🎉 No more profiles found!</Text>
+                    <NoFeedsIcon width={280} height={280} style={{ marginBottom: 20 }} />
+                    {/* <Text style={styles.noMoreText}>🎉 No more profiles found!</Text> */}
                     <TouchableOpacity style={styles.refreshBtn} onPress={fetchFeed}>
                         <Text style={styles.refreshText}>Refresh Feed</Text>
                     </TouchableOpacity>
@@ -153,59 +230,86 @@ const Home = () => {
                     return null;
                 }
 
-                if (index === currentIndex) {
+                const isCurrent = index === currentIndex;
+                const statusText = item.skills?.[0]
+                    ? `💻 ${item.skills[0]} Developer`
+                    : "👋 Looking casually";
+
+                const cardView = (
+                    <>
+                        {isCurrent && renderLikeDislikeBadges()}
+                        <Image source={{ uri: item.photoUrl }} style={styles.cardImage} resizeMode="cover" />
+
+                        {isCurrent && (
+                            <>
+                                <GradientOverlay />
+
+                                {/* Overlay text at the top left of the card */}
+                                <View style={styles.cardHeader}>
+                                    <View style={styles.nameRow}>
+                                        <Text style={styles.nameText}>
+                                            {item.firstName} {item.lastName}
+                                        </Text>
+                                        <VerifiedBadge />
+                                    </View>
+                                    <View style={styles.statusPill}>
+                                        <Text style={styles.statusText}>{statusText}</Text>
+                                    </View>
+                                </View>
+
+                                {/* Vertical pagination dots indicator inside card */}
+                                <View style={styles.paginationContainer}>
+                                    <View style={[styles.dot, styles.activeDot]} />
+                                    <View style={styles.dot} />
+                                    <View style={styles.dot} />
+                                </View>
+                            </>
+                        )}
+                    </>
+                );
+
+                if (isCurrent) {
                     return (
                         <Animated.View
                             key={item._id}
                             style={[getCardStyle(), styles.cardStyle, { zIndex: 99 }]}
                             {...panResponder.panHandlers}
                         >
-                            {renderLikeDislikeBadges()}
-                            <Image source={{ uri: item.photoUrl }} style={styles.cardImage} />
-                            <View style={styles.cardInfo}>
-                                <Text style={styles.nameText}>
-                                    {item.firstName} {item.lastName}, {item.age || 22}
-                                </Text>
-                                <Text style={styles.genderText}>
-                                    {item.gender ? item.gender.toUpperCase() : "DEVELOPER"}
-                                </Text>
-                                <Text style={styles.aboutText} numberOfLines={2}>
-                                    {item.about || "Excited to connect and build awesome projects!"}
-                                </Text>
-                                {item.skills && item.skills.length > 0 && (
-                                    <View style={styles.skillsRow}>
-                                        {item.skills.slice(0, 3).map((skill: string, idx: number) => (
-                                            <View key={idx} style={styles.skillBadge}>
-                                                <Text style={styles.skillText}>{skill}</Text>
-                                            </View>
-                                        ))}
-                                    </View>
-                                )}
-                            </View>
+                            {cardView}
                         </Animated.View>
                     );
                 }
 
-                // Render background cards with slight scale/offset to make it look stacked
-                const stackOffset = (index - currentIndex) * 10;
+                // Render background stacked cards
+                const diff = index - currentIndex;
+
+                const scale = position.x.interpolate({
+                    inputRange: [-width / 2, 0, width / 2],
+                    outputRange: [1 - (diff - 1) * 0.045, 1 - diff * 0.045, 1 - (diff - 1) * 0.045],
+                    extrapolate: "clamp"
+                });
+
+                const translateY = position.x.interpolate({
+                    inputRange: [-width / 2, 0, width / 2],
+                    outputRange: [-(diff - 1) * 12, -diff * 12, -(diff - 1) * 12],
+                    extrapolate: "clamp"
+                });
+
                 return (
                     <Animated.View
                         key={item._id}
                         style={[
                             styles.cardStyle,
                             {
-                                top: stackOffset,
                                 zIndex: 10 - index,
-                                transform: [{ scale: 1 - (index - currentIndex) * 0.05 }]
+                                transform: [
+                                    { scale },
+                                    { translateY }
+                                ]
                             }
                         ]}
                     >
-                        <Image source={{ uri: item.photoUrl }} style={styles.cardImage} />
-                        <View style={styles.cardInfo}>
-                            <Text style={styles.nameText}>
-                                {item.firstName} {item.lastName}, {item.age || 22}
-                            </Text>
-                        </View>
+                        {cardView}
                     </Animated.View>
                 );
             })
@@ -215,174 +319,180 @@ const Home = () => {
     if (loading) {
         return (
             <SafeAreaView style={styles.center}>
-                <ActivityIndicator size="large" color={colors.accent} />
+                <ActivityIndicator size="large" color={themeColors.accent} />
             </SafeAreaView>
         );
     }
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.headerTitle}>DevTinder</Text>
+            <Text style={styles.header}>My Connections</Text>
+            <View style={styles.deckContainer}>
+                {renderCards()}
+
+                {/* Floating buttons stacked overlapping the card bottom */}
+                {currentIndex < feed.length && (
+                    <View style={styles.buttonsContainer}>
+                        <TouchableOpacity style={[styles.circleBtn, styles.nopeBtn]} onPress={() => forceSwipe("left")}>
+                            <NopeIcon />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.circleBtn, styles.likeBtn]} onPress={() => forceSwipe("right")}>
+                            <LikeIcon />
+                        </TouchableOpacity>
+                    </View>
+                )}
             </View>
-
-            <View style={styles.deckContainer}>{renderCards()}</View>
-
-            {currentIndex < feed.length && (
-                <View style={styles.buttonsContainer}>
-                    <TouchableOpacity style={[styles.circleBtn, styles.nopeBtn]} onPress={() => forceSwipe("left")}>
-                        <Text style={styles.btnIcon}>❌</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.circleBtn, styles.likeBtn]} onPress={() => forceSwipe("right")}>
-                        <Text style={styles.btnIcon}>❤️</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
         </SafeAreaView>
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f5f7fa",
+        backgroundColor: colors.background,
     },
     header: {
-        height: 60,
-        justifyContent: "center",
-        alignItems: "center",
-        borderBottomWidth: 1,
-        borderBottomColor: "#eee",
-        backgroundColor: "white",
-    },
-    headerTitle: {
         fontSize: 24,
         fontWeight: "bold",
-        color: colors.accent || "#FF6B6B",
-        letterSpacing: 1,
+        color: colors.accent,
+        marginBottom: 16,
     },
     center: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#f5f7fa",
+        backgroundColor: colors.background,
     },
     deckContainer: {
         flex: 1,
-        marginTop: 20,
-        marginBottom: 20,
         alignItems: "center",
+        justifyContent: "flex-start",
+        marginTop: 40,
     },
     cardStyle: {
         position: "absolute",
-        width: width * 0.9,
-        height: height * 0.62,
-        borderRadius: 20,
-        backgroundColor: "white",
+        width: CARD_WIDTH,
+        height: CARD_HEIGHT,
+        left: (width - CARD_WIDTH) / 2,
+        top: 0,
+        borderRadius: 32,
+        backgroundColor: colors.cardBackground,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.15,
-        shadowRadius: 10,
-        elevation: 5,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: colors.isDark ? 0.3 : 0.08,
+        shadowRadius: 18,
+        elevation: 6,
         overflow: "hidden",
     },
     cardImage: {
-        flex: 1,
         width: "100%",
         height: "100%",
-        backgroundColor: "#e1e4e8",
     },
-    cardInfo: {
+    cardHeader: {
         position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        padding: 20,
-        backgroundColor: "rgba(0,0,0,0.45)",
+        top: 25,
+        left: 25,
+        zIndex: 10,
+    },
+    nameRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
     },
     nameText: {
-        fontSize: 22,
-        fontWeight: "bold",
-        color: "white",
+        fontSize: 26,
+        fontWeight: "800",
+        color: "#ffffff",
+        textShadowColor: "rgba(0,0,0,0.35)",
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 4,
     },
-    genderText: {
-        fontSize: 12,
-        fontWeight: "700",
-        color: "#ddd",
-        marginTop: 2,
-    },
-    aboutText: {
-        fontSize: 14,
-        color: "#eee",
-        marginTop: 6,
-        lineHeight: 18,
-    },
-    skillsRow: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        gap: 6,
+    statusPill: {
+        backgroundColor: "rgba(17, 17, 17, 0.4)",
+        borderRadius: 20,
+        paddingHorizontal: 14,
+        paddingVertical: 7,
         marginTop: 10,
+        alignSelf: "flex-start",
     },
-    skillBadge: {
-        backgroundColor: colors.accent || "#FF6B6B",
-        paddingVertical: 4,
-        paddingHorizontal: 10,
-        borderRadius: 12,
+    statusText: {
+        fontSize: 13,
+        fontWeight: "600",
+        color: "#ffffff",
     },
-    skillText: {
-        color: "white",
-        fontSize: 11,
-        fontWeight: "bold",
+    paginationContainer: {
+        position: "absolute",
+        right: 18,
+        top: "40%",
+        zIndex: 10,
+        gap: 6,
+        alignItems: "center",
+    },
+    dot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: "rgba(255, 255, 255, 0.4)",
+    },
+    activeDot: {
+        height: 20,
+        backgroundColor: "#ffffff",
     },
     buttonsContainer: {
+        position: "absolute",
+        top: BUTTON_CONTAINER_TOP,
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        gap: 40,
-        marginBottom: 25,
+        width: "100%",
+        zIndex: 100,
+        gap: 16,
     },
     circleBtn: {
-        width: 65,
-        height: 65,
-        borderRadius: 32.5,
+        backgroundColor: colors.cardBackground,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "white",
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 5 },
-        shadowOpacity: 0.15,
-        shadowRadius: 5,
-        elevation: 3,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: colors.isDark ? 0.25 : 0.12,
+        shadowRadius: 12,
+        elevation: 6,
     },
+
     nopeBtn: {
-        borderWidth: 2,
-        borderColor: "#F44336",
+        width: 68,
+        height: 68,
+        borderRadius: 34,
     },
     likeBtn: {
-        borderWidth: 2,
-        borderColor: "#4CAF50",
-    },
-    btnIcon: {
-        fontSize: 24,
+        width: 68,
+        height: 68,
+        borderRadius: 34,
     },
     noMoreCards: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
         width: width * 0.9,
+        paddingTop: height * 0.2,
     },
     noMoreText: {
-        fontSize: 18,
-        fontWeight: "600",
-        color: "#666",
+        fontSize: 20,
+        fontWeight: "700",
+        color: colors.textPrimary,
         textAlign: "center",
     },
     refreshBtn: {
         marginTop: 20,
-        backgroundColor: colors.accent || "#FF6B6B",
-        paddingVertical: 12,
-        paddingHorizontal: 30,
-        borderRadius: 25,
+        backgroundColor: colors.accent,
+        paddingVertical: 14,
+        paddingHorizontal: 36,
+        borderRadius: 30,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 3,
     },
     refreshText: {
         color: "white",

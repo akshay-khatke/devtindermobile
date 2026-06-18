@@ -8,24 +8,28 @@ import {
     Alert,
     Image,
     Dimensions,
+    ActivityIndicator,
 } from "react-native";
-import login_image from "../../assets/images/login_image.png"
-import google_icon from "../../assets/images/google.png"
-import facebook_icon from "../../assets/images/facebook.png"
+import login_image from "../../assets/images/login_image.png";
+import google_icon from "../../assets/images/google.png";
+import facebook_icon from "../../assets/images/facebook.png";
 import { login, signup } from "../../api/authApi";
 import { useDispatch } from "react-redux";
 import { setUser, setToken } from "../../redux/authSlice";
-import { colors } from "../../utils/colors";
+import { useTheme } from "../../utils/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ActivityIndicator } from "react-native";
+
 type IProps = {
     navigation?: any;
 };
 
-const { height, width } = Dimensions.get("window")
+const { height, width } = Dimensions.get("window");
 
 const Login: React.FC<IProps> = ({ navigation }) => {
     const dispatch = useDispatch();
+    const { colors: themeColors, isDark } = useTheme();
+    const styles = getStyles(themeColors);
+
     const [isSignup, setIsSignup] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -67,7 +71,7 @@ const Login: React.FC<IProps> = ({ navigation }) => {
                     Alert.alert("Success", "Signup Successful");
                 }
             } else {
-                console.log("in login")
+                console.log("in login");
                 const res = await login({ emailId: email, password });
                 if (res && res.token) {
                     dispatch(setToken(res.token));
@@ -84,7 +88,6 @@ const Login: React.FC<IProps> = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-
             {/* SVG IMAGE */}
             <View style={styles.svgContainer}>
                 <Image
@@ -100,12 +103,14 @@ const Login: React.FC<IProps> = ({ navigation }) => {
                 <>
                     <TextInput
                         placeholder="First Name"
+                        placeholderTextColor={themeColors.textSecondary}
                         style={styles.input}
                         value={firstName}
                         onChangeText={setFirstName}
                     />
                     <TextInput
                         placeholder="Last Name"
+                        placeholderTextColor={themeColors.textSecondary}
                         style={styles.input}
                         value={lastName}
                         onChangeText={setLastName}
@@ -115,18 +120,22 @@ const Login: React.FC<IProps> = ({ navigation }) => {
 
             <TextInput
                 placeholder="Email"
+                placeholderTextColor={themeColors.textSecondary}
                 style={styles.input}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
+                autoCapitalize="none"
             />
 
             <TextInput
                 placeholder="Password"
+                placeholderTextColor={themeColors.textSecondary}
                 style={styles.input}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                autoCapitalize="none"
             />
 
             <TouchableOpacity
@@ -174,16 +183,15 @@ const Login: React.FC<IProps> = ({ navigation }) => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any) => StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: colors.primary
-        // justifyContent: "center",
+        backgroundColor: colors.background,
     },
     svgContainer: {
         alignItems: "center",
-        paddingVertical: 20
+        paddingVertical: 20,
     },
     title: {
         fontSize: 34,
@@ -194,7 +202,9 @@ const styles = StyleSheet.create({
     },
     input: {
         borderWidth: 1,
-        borderColor: "#ddd",
+        borderColor: colors.border,
+        backgroundColor: colors.inputBackground,
+        color: colors.textPrimary,
         paddingVertical: 15,
         paddingHorizontal: 15,
         paddingLeft: 20,
@@ -222,7 +232,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     socialText: {
-        color: "#666",
+        color: colors.textSecondary,
         marginBottom: 15,
     },
     socialRow: {
@@ -234,7 +244,7 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         borderRadius: 30,
-        backgroundColor: "#fff",
+        backgroundColor: colors.cardBackground,
         justifyContent: "center",
         alignItems: "center",
         elevation: 3,
@@ -243,7 +253,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         borderWidth: 1,
-        borderColor: "#f0f0f0",
+        borderColor: colors.border,
     },
     socialIcon: {
         width: 35,
@@ -254,7 +264,7 @@ const styles = StyleSheet.create({
         marginTop: "auto",
         marginBottom: 20,
         textAlign: "center",
-        color: "gray",
+        color: colors.textSecondary,
         textDecorationLine: "underline",
     },
 });
