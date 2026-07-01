@@ -18,6 +18,9 @@ import { sendRequestStatus } from "../../api/requestApi";
 import Svg, { Path, Circle, Defs, LinearGradient as SvgLinearGradient, Rect, Stop } from "react-native-svg";
 import { useTheme } from "../../utils/colors";
 import NoFeedsIcon from "../../assets/svg/no_feeds.svg";
+import VerifiedIcon from "../../assets/svg/verified.svg";
+import NopeIconSvg from "../../assets/svg/nope.svg";
+import LikeIconSvg from "../../assets/svg/like.svg";
 
 const { width, height } = Dimensions.get("window");
 const CARD_WIDTH = width * 0.92;
@@ -41,39 +44,17 @@ const GradientOverlay = () => (
 );
 
 const VerifiedBadge = () => (
-    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" style={{ marginLeft: 6 }}>
-        <Circle cx={12} cy={12} r={12} fill="#3BCE5B" />
-        <Path
-            d="M7 12.5l3.5 3.5 6.5-7"
-            stroke="#ffffff"
-            strokeWidth={3}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        />
-    </Svg>
+    <VerifiedIcon style={{ marginLeft: 6 }} />
 );
 
 
 
 const NopeIcon = () => (
-    <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
-        <Path
-            d="M18 6L6 18M6 6l12 12"
-            stroke="#E55050"
-            strokeWidth={3.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        />
-    </Svg>
+    <NopeIconSvg />
 );
 
 const LikeIcon = () => (
-    <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
-        <Path
-            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-            fill="#A124FF"
-        />
-    </Svg>
+    <LikeIconSvg />
 );
 
 const Home = () => {
@@ -242,7 +223,7 @@ const Home = () => {
 
                         {isCurrent && (
                             <>
-                                <GradientOverlay />
+                                {/* <GradientOverlay /> */}
 
                                 {/* Overlay text at the top left of the card */}
                                 <View style={styles.cardHeader}>
@@ -282,7 +263,7 @@ const Home = () => {
 
                 // Render background stacked cards
                 const diff = index - currentIndex;
-
+                //to do size small and big
                 const scale = position.x.interpolate({
                     inputRange: [-width / 2, 0, width / 2],
                     outputRange: [1 - (diff - 1) * 0.045, 1 - diff * 0.045, 1 - (diff - 1) * 0.045],
@@ -349,9 +330,11 @@ const Home = () => {
 const getStyles = (colors: any) => StyleSheet.create({
     container: {
         flex: 1,
+        // padding: 10,
         backgroundColor: colors.background,
     },
     header: {
+        padding: 16,
         fontSize: 24,
         fontWeight: "bold",
         color: colors.accent,
