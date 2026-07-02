@@ -1,5 +1,6 @@
 // src/api/user.ts
-import API from "./client";
+
+import API from "../../../shared/api/client";
 
 export const getProfile = async () => {
     const res = await API.get("/user/profile");

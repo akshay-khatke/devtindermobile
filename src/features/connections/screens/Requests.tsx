@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useIsFocused } from "@react-navigation/native";
-import { getRequestReceived } from "../api/userApi";
 import { reviewRequestStatus } from "../api/requestApi";
 import { useTheme } from "../../../shared/utils/colors";
+import { getRequestReceived } from "../../profile/api/userApi";
 
 const Requests = () => {
     const { colors: themeColors, isDark } = useTheme();

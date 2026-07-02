@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { createStackNavigator } from '@react-navigation/stack';
-import AppStack from "../stack/AppStack";
-import AuthStack from "../stack/AuthStack";
+import AppStack from "./AppStack";
+import AuthStack from "./AuthStack";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store/store";
 import { setUser, setToken, logout } from "../../features/auth/slice/authSlice";
 import * as Keychain from "react-native-keychain";
-import { viewProfile } from "../api/userApi";
+import { getProfile } from "../../features/profile/api/userApi";
 
 const Stack = createStackNavigator();
 
@@ -24,7 +24,7 @@ const Routes = () => {
                     const token = credentials.password;
                     dispatch(setToken(token));
                     // Fetch user profile from backend using the token
-                    const profileData = await viewProfile();
+                    const profileData = await getProfile();
                     if (profileData) {
                         dispatch(setUser(profileData));
                     } else {

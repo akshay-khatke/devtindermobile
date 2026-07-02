@@ -1,5 +1,6 @@
 // src/api/requestApi.ts
-import API from "./client";
+
+import API from "../../../shared/api/client";
 
 // POST /request/send/:status/:toUserId
 // status can be "interested" or "ignored"

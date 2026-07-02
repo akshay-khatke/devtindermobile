@@ -13,14 +13,14 @@ import {
     Alert
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFeed } from "../api/userApi";
-import { sendRequestStatus } from "../api/requestApi";
 import Svg, { Path, Circle, Defs, LinearGradient as SvgLinearGradient, Rect, Stop } from "react-native-svg";
 import { useTheme } from "../../../shared/utils/colors";
 import NoFeedsIcon from "../../../shared/assets/svg/no_feeds.svg";
 import VerifiedIcon from "../../../shared/assets/svg/verified.svg";
 import NopeIconSvg from "../../../shared/assets/svg/nope.svg";
 import LikeIconSvg from "../../../shared/assets/svg/like.svg";
+import { getFeed } from "../../profile/api/userApi";
+import { sendRequestStatus } from "../../connections/api/requestApi";
 
 const { width, height } = Dimensions.get("window");
 const CARD_WIDTH = width * 0.92;

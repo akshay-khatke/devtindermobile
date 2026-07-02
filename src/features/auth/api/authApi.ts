@@ -1,13 +1,13 @@
 // src/api/auth.ts
-import API from "./client";
+
 import * as Keychain from "react-native-keychain";
+import API from "../../../shared/api/client";
 
 export const login = async (data: {
     emailId: string;
     password: string;
 }) => {
     const res = await API.post("/auth/login", data);
-
     // Save token once in Keychain
     if (res.data && res.data.token) {
         await Keychain.setGenericPassword("token", res.data.token);

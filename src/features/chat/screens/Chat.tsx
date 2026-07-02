@@ -14,10 +14,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store/store";
-import { getConnections } from "../api/userApi";
 import { getChat } from "../api/chatApi";
 import Svg, { Path, Circle } from "react-native-svg";
 import { useTheme } from "../../../shared/utils/colors";
+import { getConnections } from "../../profile/api/userApi";
 
 const BackIcon = ({ stroke }: { stroke: string }) => (
     <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">

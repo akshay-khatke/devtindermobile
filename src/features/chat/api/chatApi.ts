@@ -1,5 +1,7 @@
 // src/api/chatApi.ts
-import API from "./client";
+
+import API from "../../../shared/api/client";
+
 
 // GET /chat/getChat/:targetUserId
 export const getChat = async (targetUserId: string) => {

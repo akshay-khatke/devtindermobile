@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
-import { getConnections } from "../api/userApi";
 import { useTheme } from "../../../shared/utils/colors";
+import { getConnections } from "../../profile/api/userApi";
 
 const Connections = () => {
     const { colors: themeColors, isDark } = useTheme();
