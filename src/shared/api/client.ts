@@ -1,7 +1,7 @@
 // src/api/client.ts
 import axios from "axios";
 import * as Keychain from "react-native-keychain";
-import { BASE_URL } from "../constants/baseUrl";
+import { BASE_URL } from "../../shared/constants/baseUrl";
 
 const API = axios.create({
     baseURL: BASE_URL,

@@ -13,11 +13,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import { getConnections } from "../../api/userApi";
-import { getChat } from "../../api/chatApi";
+import { RootState } from "../../../app/store/store";
+import { getConnections } from "../api/userApi";
+import { getChat } from "../api/chatApi";
 import Svg, { Path, Circle } from "react-native-svg";
-import { useTheme } from "../../utils/colors";
+import { useTheme } from "../../../shared/utils/colors";
 
 const BackIcon = ({ stroke }: { stroke: string }) => (
     <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
@@ -83,7 +83,7 @@ const Chat = () => {
 
                         if (lastMsg) {
                             timestampVal = new Date(lastMsg.timestamp || lastMsg.createdAt || Date.now()).getTime();
-                            
+
                             const elapsedMs = Date.now() - timestampVal;
                             const elapsedMins = Math.floor(elapsedMs / 60000);
                             const elapsedHours = Math.floor(elapsedMins / 60);

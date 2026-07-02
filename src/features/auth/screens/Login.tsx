@@ -10,13 +10,13 @@ import {
     Dimensions,
     ActivityIndicator,
 } from "react-native";
-import login_image from "../../assets/images/login_image.png";
-import google_icon from "../../assets/images/google.png";
-import facebook_icon from "../../assets/images/facebook.png";
-import { login, signup } from "../../api/authApi";
+import login_image from "../../../shared/assets/images/login_image.png";
+import google_icon from "../../../shared/assets/images/google.png";
+import facebook_icon from "../../../shared/assets/images/facebook.png";
+import { login, signup } from "../api/authApi";
 import { useDispatch } from "react-redux";
-import { setUser, setToken } from "../../redux/authSlice";
-import { useTheme } from "../../utils/colors";
+import { setUser, setToken } from "../../../features/auth/slice/authSlice";
+import { useTheme } from "../../../shared/utils/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type IProps = {

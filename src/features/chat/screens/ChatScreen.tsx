@@ -17,10 +17,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { io, Socket } from "socket.io-client";
-import { RootState } from "../../redux/store";
-import { getChat } from "../../api/chatApi";
-import { BASE_URL } from "../../constants/baseUrl";
-import { useTheme } from "../../utils/colors";
+import { RootState } from "../../../app/store/store";
+import { getChat } from "../api/chatApi";
+import { BASE_URL } from "../../../shared/constants/baseUrl";
+import { useTheme } from "../../../shared/utils/colors";
 import Svg, { Path, Circle, Rect } from "react-native-svg";
 
 interface IMessage {

@@ -4,8 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import AppStack from "../stack/AppStack";
 import AuthStack from "../stack/AuthStack";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../redux/store";
-import { setUser, setToken, logout } from "../redux/authSlice";
+import { RootState } from "../../app/store/store";
+import { setUser, setToken, logout } from "../../features/auth/slice/authSlice";
 import * as Keychain from "react-native-keychain";
 import { viewProfile } from "../api/userApi";
 

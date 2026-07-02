@@ -9,11 +9,11 @@ import { Text, View } from 'react-native';
 import {
   SafeAreaProvider,
 } from 'react-native-safe-area-context';
-import Routes from './src/routes/Routes';
+import Routes from './src/app/navigation/Routes';
 import { NavigationContainer } from '@react-navigation/native';
 
 import { Provider } from 'react-redux';
-import { store } from './src/redux/store';
+import { store } from './src/app/store/store';
 
 function App() {
   return (

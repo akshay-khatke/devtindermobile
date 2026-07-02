@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useIsFocused } from "@react-navigation/native";
-import { getRequestReceived } from "../../api/userApi";
-import { reviewRequestStatus } from "../../api/requestApi";
-import { useTheme } from "../../utils/colors";
+import { getRequestReceived } from "../api/userApi";
+import { reviewRequestStatus } from "../api/requestApi";
+import { useTheme } from "../../../shared/utils/colors";
 
 const Requests = () => {
     const { colors: themeColors, isDark } = useTheme();
@@ -77,14 +77,14 @@ const Requests = () => {
                                     </Text>
                                 </View>
                                 <View style={styles.buttonRow}>
-                                    <TouchableOpacity 
-                                        style={styles.acceptBtn} 
+                                    <TouchableOpacity
+                                        style={styles.acceptBtn}
                                         onPress={() => handleReview("accepted", item._id)}
                                     >
                                         <Text style={styles.btnTextConfirm}>Confirm</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity 
-                                        style={styles.rejectBtn} 
+                                    <TouchableOpacity
+                                        style={styles.rejectBtn}
                                         onPress={() => handleReview("rejected", item._id)}
                                     >
                                         <Text style={styles.btnTextDelete}>Delete</Text>

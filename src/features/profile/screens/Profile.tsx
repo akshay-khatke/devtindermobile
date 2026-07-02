@@ -3,10 +3,10 @@ import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../redux/store";
-import { logout } from "../../redux/authSlice";
+import { RootState } from "../../../app/store/store";
+import { logout } from "../../../features/auth/slice/authSlice";
 import * as Keychain from "react-native-keychain";
-import { useTheme } from "../../utils/colors";
+import { useTheme } from "../../../shared/utils/colors";
 import Svg, { Path, Circle, Rect } from "react-native-svg";
 
 const CalendarIcon = ({ stroke }: { stroke: string }) => (
