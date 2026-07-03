@@ -46,3 +46,8 @@ export const changePassword = async (data: {
     const res = await API.post("/auth/changePassword", data);
     return res.data;
 };
+
+export const saveFcmToken = async (fcmToken: string) => {
+    const res = await API.patch("/profile/fcm-token", { token: fcmToken });
+    return res.data;
+};

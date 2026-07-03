@@ -13,7 +13,8 @@ import {
 import login_image from "../../../shared/assets/images/login_image.png";
 import google_icon from "../../../shared/assets/images/google.png";
 import facebook_icon from "../../../shared/assets/images/facebook.png";
-import { login, signup } from "../api/authApi";
+import messaging from '@react-native-firebase/messaging';
+import { login, signup, saveFcmToken } from "../api/authApi";
 import { useDispatch } from "react-redux";
 import { setUser, setToken } from "../../../features/auth/slice/authSlice";
 import { useTheme } from "../../../shared/utils/colors";
@@ -68,6 +69,14 @@ const Login: React.FC<IProps> = ({ navigation }) => {
                 if (res && res.token) {
                     dispatch(setToken(res.token));
                     dispatch(setUser(res.data));
+                    
+                    try {
+                        const fcmToken = await messaging().getToken();
+                        if (fcmToken) await saveFcmToken(fcmToken);
+                    } catch (e) {
+                        console.log("FCM Token Error:", e);
+                    }
+                    
                     Alert.alert("Success", "Signup Successful");
                 }
             } else {
@@ -76,6 +85,14 @@ const Login: React.FC<IProps> = ({ navigation }) => {
                 if (res && res.token) {
                     dispatch(setToken(res.token));
                     dispatch(setUser(res));
+                    
+                    try {
+                        const fcmToken = await messaging().getToken();
+                        if (fcmToken) await saveFcmToken(fcmToken);
+                    } catch (e) {
+                        console.log("FCM Token Error:", e);
+                    }
+                    
                     Alert.alert("Success", "Login Successful");
                 }
             }
