@@ -8,10 +8,13 @@ import { RootState } from "../../app/store/store";
 import { setUser, setToken, logout } from "../../features/auth/slice/authSlice";
 import * as Keychain from "react-native-keychain";
 import { getProfile } from "../../features/profile/api/userApi";
+import { useScreenshotDetector } from "../../shared/hooks/useScreenshotDetector";
 
 const Stack = createStackNavigator();
 
 const Routes = () => {
+    useScreenshotDetector(); // <-- Initialize screenshot detector
+
     const dispatch = useDispatch();
     const { user } = useSelector((state: RootState) => state.auth);
     const [checkingAuth, setCheckingAuth] = useState(true);
