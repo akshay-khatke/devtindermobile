@@ -1,0 +1,6 @@
+app_identifier("com.yourcompany.yourapp") # Your iOS Bundle ID
+apple_id("developer@yourcompany.com")     # Your Apple Developer Email
+itc_team_id("123456789")                  # App Store Connect Team ID
+
+# Android Configurations
+package_name("com.yourcompany.yourapp")   # Your Android Package Name
