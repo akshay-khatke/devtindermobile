@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Text,
     View,
@@ -8,10 +8,14 @@ import {
     Alert,
     Image,
     Dimensions,
+    NativeModules,
+    NativeEventEmitter,
+    PermissionsAndroid,
+    Platform
 } from "react-native";
 import login_image from "../../assets/images/login_image.png"
-import google_icon from "../../assets/images/google.png"
-import facebook_icon from "../../assets/images/facebook.png"
+import google_icon from "../../assets/images/google.jpg"
+import facebook_icon from "../../assets/images/facebook.jpg"
 import { login, signup } from "../../api/authApi";
 import { useDispatch } from "react-redux";
 import { setUser, setToken } from "../../redux/authSlice";
@@ -32,6 +36,41 @@ const Login: React.FC<IProps> = ({ navigation }) => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const { ScreenshotDetector } = NativeModules;
+        let subscription: any = null;
+
+        const requestPermissionAndListen = async () => {
+            if (Platform.OS === 'android') {
+                if (Number(Platform.Version) >= 33) {
+                    await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
+                } else {
+                    await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+                }
+            }
+
+            if (ScreenshotDetector) {
+                ScreenshotDetector.startListening();
+                const eventEmitter = new NativeEventEmitter(ScreenshotDetector);
+                subscription = eventEmitter.addListener('onScreenshotDetected', (message) => {
+                    console.log('Screenshot detected:', message);
+                    Alert.alert('Screenshot Detected', 'Taking screenshots is not allowed here.');
+                });
+            }
+        };
+
+        requestPermissionAndListen();
+
+        return () => {
+            if (subscription) {
+                subscription.remove();
+            }
+            if (ScreenshotDetector) {
+                ScreenshotDetector.stopListening();
+            }
+        };
+    }, []);
 
     const validate = () => {
         const emailRegex = /\S+@\S+\.\S+/;
@@ -69,6 +108,7 @@ const Login: React.FC<IProps> = ({ navigation }) => {
             } else {
                 console.log("in login")
                 const res = await login({ emailId: email, password });
+                console.log(res, 'check response')
                 if (res && res.token) {
                     dispatch(setToken(res.token));
                     dispatch(setUser(res));

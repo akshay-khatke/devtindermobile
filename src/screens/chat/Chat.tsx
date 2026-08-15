@@ -1,6 +1,6 @@
 // src/screens/chat/Chat.tsx
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActivityIndicator, NativeModules, NativeEventEmitter, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getConnections } from "../../api/userApi";
 import { colors } from "../../utils/colors";
@@ -10,6 +10,18 @@ const Chat = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const { ScreenshotDetector } = NativeModules;
+        let subscription: any = null;
+
+        if (ScreenshotDetector) {
+            ScreenshotDetector.startListening();
+            const eventEmitter = new NativeEventEmitter(ScreenshotDetector);
+            subscription = eventEmitter.addListener('onScreenshotDetected', (message) => {
+                console.log('Screenshot detected:', message);
+                Alert.alert('Screenshot Detected', 'Taking screenshots of chats is not allowed.');
+            });
+        }
+
         const fetchConnections = async () => {
             try {
                 const res = await getConnections();
@@ -21,6 +33,15 @@ const Chat = () => {
             }
         };
         fetchConnections();
+
+        return () => {
+            if (subscription) {
+                subscription.remove();
+            }
+            if (ScreenshotDetector) {
+                ScreenshotDetector.stopListening();
+            }
+        };
     }, []);
 
     if (loading) {

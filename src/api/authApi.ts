@@ -8,6 +8,7 @@ export const login = async (data: {
 }) => {
     console.log(data.emailId, data.password, 'dajcnajdn')
     const res = await API.post("/auth/login", data);
+    console.log(res, 'in login api')
 
     // Save token once
     // await AsyncStorage.setItem("token", res.data.token);

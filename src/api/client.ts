@@ -26,6 +26,7 @@ API.interceptors.request.use(
 API.interceptors.response.use(
     (response) => response,
     async (error) => {
+        console.error("API Error Details:", error.message, error.response?.data);
         if (error.response?.status === 401) {
             console.log("Unauthorized - redirect to login");
             // Optional: clear token
