@@ -38,7 +38,19 @@ const Login: React.FC<IProps> = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const { ScreenshotDetector } = NativeModules;
+        const { ScreenshotDetector, BatteryModule } = NativeModules;
+
+        // फंक्शन कॉल करणे
+        const checkBattery = async () => {
+            try {
+                const batteryLevel = await BatteryModule.getBatteryLevel();
+                console.log("Battery is at: " + batteryLevel + "%");
+            } catch (e) {
+                console.error("Error getting battery: ", e);
+            }
+        };
+        checkBattery();
+
         let subscription: any = null;
 
         const requestPermissionAndListen = async () => {
@@ -55,7 +67,7 @@ const Login: React.FC<IProps> = ({ navigation }) => {
                 const eventEmitter = new NativeEventEmitter(ScreenshotDetector);
                 subscription = eventEmitter.addListener('onScreenshotDetected', (message) => {
                     console.log('Screenshot detected:', message);
-                    Alert.alert('Screenshot Detected', 'Taking screenshots is not allowed here.');
+                    Alert.alert('Screenshot Detected', 'Taking screenshots is not allowed here ok.');
                 });
             }
         };
