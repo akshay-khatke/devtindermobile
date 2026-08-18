@@ -45,8 +45,8 @@ const Login: React.FC<IProps> = ({ navigation }) => {
             return false;
         }
 
-        if (password.length < 6) {
-            Alert.alert("Password must be at least 6 characters");
+        if (password.length < 8) {
+            Alert.alert("Password must be at least 8 characters long and contain uppercase, lowercase, numbers, and symbols");
             return false;
         }
 
@@ -80,7 +80,10 @@ const Login: React.FC<IProps> = ({ navigation }) => {
                 }
             }
         } catch (error: any) {
-            Alert.alert("Error", error.response?.data?.message || "Something went wrong");
+            const errorMsg = typeof error.response?.data === 'string' 
+                ? error.response.data 
+                : (error.response?.data?.message || "Something went wrong");
+            Alert.alert("Error", errorMsg);
         } finally {
             setLoading(false);
         }

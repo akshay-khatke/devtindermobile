@@ -184,9 +184,7 @@ const ChatScreen = () => {
         console.log("Initializing socket connection to:", BASE_URL);
         console.log("Current User ID:", user?._id, "Target User ID:", targetUser._id);
 
-        const socket = io(BASE_URL, {
-            transports: ["websocket"],
-        });
+        const socket = io(BASE_URL);
         socketRef.current = socket;
 
         const joinRoom = () => {

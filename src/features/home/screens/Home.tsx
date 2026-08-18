@@ -24,7 +24,7 @@ import { sendRequestStatus } from "../../connections/api/requestApi";
 
 const { width, height } = Dimensions.get("window");
 const CARD_WIDTH = width * 0.92;
-const CARD_HEIGHT = height * 0.70;
+const CARD_HEIGHT = height * 0.62;
 const BUTTON_CONTAINER_TOP = CARD_HEIGHT - 34;
 const SWIPE_THRESHOLD = 0.25 * width;
 
