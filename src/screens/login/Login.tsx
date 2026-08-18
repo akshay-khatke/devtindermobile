@@ -38,18 +38,18 @@ const Login: React.FC<IProps> = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const { ScreenshotDetector, BatteryModule } = NativeModules;
+        const { ScreenshotDetector } = NativeModules;
 
         // फंक्शन कॉल करणे
-        const checkBattery = async () => {
-            try {
-                const batteryLevel = await BatteryModule.getBatteryLevel();
-                console.log("Battery is at: " + batteryLevel + "%");
-            } catch (e) {
-                console.error("Error getting battery: ", e);
-            }
-        };
-        checkBattery();
+        // const checkBattery = async () => {
+        //     try {
+        //         const batteryLevel = await BatteryModule.getBatteryLevel();
+        //         console.log("Battery is at: " + batteryLevel + "%");
+        //     } catch (e) {
+        //         console.error("Error getting battery: ", e);
+        //     }
+        // };
+        // checkBattery();
 
         let subscription: any = null;
 
