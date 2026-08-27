@@ -116,6 +116,8 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        testBuildType System.getProperty('testBuildType', 'debug')
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     signingConfigs {
         debug {
@@ -123,6 +125,12 @@ android {
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
+        }
+        release {
+            storeFile file(System.getenv("MYAPP_UPLOAD_STORE_FILE") ?: "my-upload-key.keystore")
+            storePassword System.getenv("MYAPP_UPLOAD_STORE_PASSWORD") ?: "dummy"
+            keyAlias System.getenv("MYAPP_UPLOAD_KEY_ALIAS") ?: "my-key-alias"
+            keyPassword System.getenv("MYAPP_UPLOAD_KEY_PASSWORD") ?: "dummy"
         }
     }
     buildTypes {
@@ -133,7 +141,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             manifestPlaceholders = [usesCleartextTraffic:false]
@@ -150,4 +158,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    androidTestImplementation('com.wix:detox:+')
 }

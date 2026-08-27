@@ -1,0 +1,40 @@
+default_platform(:android)
+
+platform :android do
+  
+  desc "Build the Android App"
+  lane :build do
+    gradle(task: "clean assembleRelease")
+  end
+
+  desc "Submit a new Beta Build to Firebase App Distribution"
+  lane :beta do
+    # Build the APK
+    gradle(
+      task: "assemble",
+      build_type: "Release"
+    )
+
+    # Upload to Firebase App Distribution
+    firebase_app_distribution(
+      app: "YOUR_FIREBASE_APP_ID", # TODO: User needs to update this with their actual Firebase App ID
+      release_notes: "Beta version deployed via Fastlane",
+      groups: "testers" # Requires a group named 'testers' in Firebase
+    )
+  end
+
+  desc "Deploy a new version to the Google Play Store"
+  lane :deploy do
+    # Build the AAB
+    gradle(
+      task: "bundle",
+      build_type: "Release"
+    )
+
+    # Upload to Play Store
+    upload_to_play_store(
+      track: "internal", # Can be changed to 'production', 'alpha', or 'beta'
+      aab: "app/build/outputs/bundle/release/app-release.aab"
+    )
+  end
+end

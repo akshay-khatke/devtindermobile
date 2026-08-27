@@ -11,7 +11,9 @@ export const login = async (data: {
     console.log(res, 'in login api')
 
     // Save token once
-    // await AsyncStorage.setItem("token", res.data.token);
+    if (res.data && res.data.token) {
+        await AsyncStorage.setItem("token", res.data.token);
+    }
 
     return res.data;
 };

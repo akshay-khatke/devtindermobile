@@ -1,0 +1,2 @@
+json_key_file("/Users/apple/Desktop/assets dev tinder/devtinder-83c3e-6f641e0af27d.json") # Path to the json secret file
+package_name("com.devtinderapp") # Android package name

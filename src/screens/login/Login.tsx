@@ -123,7 +123,7 @@ const Login: React.FC<IProps> = ({ navigation }) => {
                 console.log(res, 'check response')
                 if (res && res.token) {
                     dispatch(setToken(res.token));
-                    dispatch(setUser(res));
+                    dispatch(setUser(res.user || res.data || res));
                     Alert.alert("Success", "Login Successful");
                 }
             }
@@ -171,6 +171,7 @@ const Login: React.FC<IProps> = ({ navigation }) => {
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
+                testID="emailInput"
             />
 
             <TextInput
@@ -179,12 +180,14 @@ const Login: React.FC<IProps> = ({ navigation }) => {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                testID="passwordInput"
             />
 
             <TouchableOpacity
                 style={[styles.button, loading && { opacity: 0.7 }]}
                 onPress={handleSubmit}
                 disabled={loading}
+                testID="loginButton"
             >
                 {loading ? (
                     <ActivityIndicator color="#ffffff" />
@@ -195,7 +198,7 @@ const Login: React.FC<IProps> = ({ navigation }) => {
                 )}
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => setIsSignup(!isSignup)}>
+            <TouchableOpacity onPress={() => setIsSignup(!isSignup)} testID="toggleSignupButton">
                 <Text style={styles.link}>
                     {isSignup
                         ? "Already have an account? Login"

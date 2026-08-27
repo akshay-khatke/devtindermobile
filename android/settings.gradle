@@ -1,6 +1,13 @@
 pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
 plugins { id("com.facebook.react.settings") }
-extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+def npxCommand = "npx"
+def nvmNpx = new File(System.getProperty("user.home"), ".nvm/versions/node/v25.2.1/bin/npx")
+if (nvmNpx.exists()) {
+    npxCommand = nvmNpx.absolutePath
+}
+extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> 
+    ex.autolinkLibrariesFromCommand([npxCommand, "@react-native-community/cli", "config"]) 
+}
 rootProject.name = 'devtinderapp'
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
