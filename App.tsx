@@ -5,7 +5,7 @@
  * @format
  */
 
-import { Text, View } from 'react-native';
+import { Text, View, StatusBar } from 'react-native';
 import {
   SafeAreaProvider,
 } from 'react-native-safe-area-context';
@@ -19,6 +19,7 @@ function App() {
   return (
     <Provider store={store}>
       <SafeAreaProvider>
+        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" translucent={false} />
         <NavigationContainer>
           <Routes />
         </NavigationContainer>
